@@ -84,15 +84,21 @@ public class DaoGames {
         }
         return games;
     }
-
-    public boolean create(BeanGames beanGames, InputStream image){
+    
+    public boolean create(BeanGames games, InputStream image){
         boolean flag = false;
         try{
             con = ConnectionMySQL.getConnection();
-            cstm = con.prepareCall("{call sp_create(?,?,?,?)}");
-            cstm.setBlob(1, image);
-        } catch(SQLException e) {
-
+            cstm = con.prepareCall("{call sp_create(?,?,?)}");
+            cstm.setString(1, games.getName());
+            cstm.setBlob(2, imgGame);
+            cstm.setString(3, games.getDatePremiere());
+            cstm.execute();
+            flag = true;
+        }catch(SQLException e){
+            System.out.println("Ha ocurrido un error: " + e.getMessage());
+        } finally {
+            ConnectionMySQL.closeConnections(con, cstm);
         }
         return flag;
     }
